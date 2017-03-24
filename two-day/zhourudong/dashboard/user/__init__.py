@@ -31,13 +31,17 @@ class UserListView(TemplateView):
             end_index = page_count
 
         '''(获取当前页到末尾页码 列表形式) '''
+        # if start_index >2:
+        #     start_index -= 4
+
+
+        # if end_index > 10:
+        #     end_index -= 5
         page_index = paginator.page_range[start_index:end_index]
         ''' 获取page对象(获取当前页的数据 到末尾页码) '''
         page_obj = paginator.page(page)
         context['page_obj'] = page_obj
         context['page_index'] = page_index
-        print type(context['page_obj'])
-        print page_index
         return context
 
 
