@@ -1,7 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
-
+{% load staticfiles %}
 <head>
 
 <meta charset="utf-8">
@@ -14,17 +13,27 @@
 <link href="/static/img/favicon.ico" type="image/x-icon" rel="shortcut icon">
 
 <!--第三方插件样式-->
-<link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="/static/vendor/datatable/datatable.css" rel="stylesheet">
-<link href="/static/vendor/metismenu/metismenu.min.css" rel="stylesheet">
-<link href="/static/vendor/alert/sweet-alert.css" rel="stylesheet">
-<link href="/static/vendor/bootstrap-multiselect.css" rel="stylesheet">
-<link href="/static/vendor/validform.css" rel="stylesheet">
-<link href="/static/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-<link href="/static/chosen/css/chosen.min.css" rel="stylesheet" type="text/css">
-<link href="/static/chosen/css/chosen-bootstrap.css" rel="stylesheet" type="text/css">
+{#<link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">#}
+<link href="{%   static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+{#<link href="/static/vendor/datatable/datatable.css" rel="stylesheet">#}
+<link href="{% static 'vendor/datatable/datatable.css' %}" rel="stylesheet">
+{#<link href="/static/vendor/metismenu/metismenu.min.css" rel="stylesheet">#}
+<link href="{% static 'vendor/metismenu/metismenu.min.css' %}" rel="stylesheet">
+{#<link href="/static/vendor/alert/sweet-alert.css" rel="stylesheet">#}
+<link href="{% static 'vendor/alert/sweet-alert.css' %}" rel="stylesheet">
+{#<link href="/static/vendor/bootstrap-multiselect.css" rel="stylesheet">#}
+<link href="{% static 'vendor/bootstrap-multiselect.css' %}" rel="stylesheet">
+{#<link href="/static/vendor/validform.css" rel="stylesheet">#}
+<link href="{% static 'vendor/validform.css' %}" rel="stylesheet">
+{#<link href="/static/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">#}
+<link href="{% static 'vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+{#<link href="/static/chosen/css/chosen.min.css" rel="stylesheet" type="text/css">#}
+<link href="{% static 'chosen/css/chosen.min.css' %}" rel="stylesheet" type="text/css">
+{#<link href="/static/chosen/css/chosen-bootstrap.css" rel="stylesheet" type="text/css">#}
+<link href="{% static 'chosen/css/chosen-bootstrap.css' %}" rel="stylesheet" type="text/css">
 <!--自定义样式文件 ＊重要＊-->
-<link href="/static/vendor/sb-admin-2.css" rel="stylesheet">
+{#<link href="/static/vendor/sb-admin-2.css" rel="stylesheet">#}
+<link href="{% static 'vendor/sb-admin-2.css' %}" rel="stylesheet">
 
 
 <style type="text/css">
