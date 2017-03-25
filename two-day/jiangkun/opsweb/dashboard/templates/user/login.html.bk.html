@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <title>{{ title }}</title>
+        <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    </head>
+
+    <body>
+        <h1>用户登录</h1>
+        <ul>
+            <form action="/dashboard/login/" method="post">
+                <li>用户名 <input type="text" name="username" id="username"/></li>
+                <li>密码   <input type="password" name="password" id="password"/></li>
+                <li><input type="submit" value="登录" id="form_submit"></li>
+            </form>
+        </ul>
+    </body>
+</html>
+
+<script>
+$(function(){
+    $("#form_submit").click(function(){
+        var username = $("#username").val();
+        var password = $("#password").val();
+        console.log("用户名："+ username);    
+        console.log("密码："+ password);    
+        $.post("/dashboard/login/",
+            {username: username, password: password},
+            function(data){
+                alert("Data Loaded: " + data);
+            }
+        );
+        return false;
+    })
+});
+</script>
