@@ -1,0 +1,24 @@
+{% extends "public/layout.html" %}
+
+{%  block body %}
+<form class="form-horizontal" method="post">
+  <div class="form-group">
+    <label class="col-sm-2 control-label">原电话</label>
+    <div class="col-sm-5">
+      <p class="form-control-static">{{ user_obj.profile.phone }}</p>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="inputPassword3" class="col-sm-2 control-label">修改为</label>
+    <div class="col-sm-5">
+      <input type="text" class="form-control" name="phone" placeholder="{{ user_obj.profile.phone }}">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-5">
+      <input type="hidden" name="id" value="{{ user_obj.id }}">
+      <button type="submit" class="btn btn-primary">提交</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<body>
+    <!-- action="#" 当前URL路径-->
+    <!--<form action="#" method="post">-->
+    <form action="#" method="put">
+        <ul>
+            <li><input type="text" name="username"></li>
+            <li><input type="checkbox" name="fav" value="1"> Linux</li>
+            <li><input type="checkbox" name="fav" value="2"> Python</li>
+            <li><input type="checkbox" name="fav" value="3"> Golang</li>
+            <li><input type="submit" value="提交" id="btn_submit"></li>
+        </ul>
+
+    </form>
+</body>
+</html>
+
+<script>
+$.ajax({
+    // 页面加载的时候触发 $.
+    url: "#",
+    data: {"username": "rock", "fav": ["1", "2"]},
+    type: "put"
+ });
+
+$("#btn_submit").click(function () {
+    
+})
+</script>
