@@ -1,0 +1,36 @@
+{% extends "public/layout.html" %}
+
+{% block body %}
+<form class="form-horizontal" method="post">
+    <input type="hidden" value="{{ user_obj.id }}" name="user_id">
+    <div class="form-group">
+        <label class="col-sm-2 control-label">中文名</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="profile_name" placeholder="中文名" value="{{ user_obj.profile.name }}" >
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">电话</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="profile_phone" placeholder="电话" value="{{ user_obj.profile.phone }}" >
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">部门</label>
+        <div class="col-sm-10">
+            <select class="form-control show-tick" name="department_id" data-style="btn-primary">
+                <option value="-1">请选择部门</option>
+                {% for department in department_list %}
+                <option value="{{ department.id }}" {% if department.id == user_obj.profile.department.id %}selected{% endif %}>
+                    {{ department.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-primary">修改</button>
+        </div>
+    </div>
+</form>
+{% endblock %}
