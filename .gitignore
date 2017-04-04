@@ -4,3 +4,6 @@
 
 # python tmp file
 *.pyc
+
+# spec
+push-homework.sh
