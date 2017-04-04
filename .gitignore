@@ -1,3 +1,6 @@
 # IDE info
 .idea/
 .idea/*
+
+# python tmp file
+*.pyc

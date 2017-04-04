@@ -1,0 +1,181 @@
+{% extends "public/layout.html" %}
+
+{% block body %}
+    <table class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>用户名</th>
+            <th>email</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+
+        {% for user in page_obj.object_list %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+
+{#            根据user 不同的 is_active 状态来展现正常和禁用的状态图图标#}
+            <td class="user_status">
+                {% if user.is_active %}
+                    <span class="glyphicon glyphicon-ok-circle text-success"></span>正常
+                {% else %}
+                    <span class="glyphicon glyphicon-warning-sign text-warning"></span>禁止
+                {% endif %}
+            </td>
+
+            <td>
+                <div class="btn-group">
+                    <div class="btn-group">
+                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="false">
+                            修改
+                            <span class="caret"></span>
+                        </button>
+
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Another action</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Something else here</a></li>
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Separated link</a></li>
+                        </ul>
+                    </div>
+
+{#                    展现用户禁用和启用的颜色和状态#}
+                    {% if user.is_active %}
+                        <button type="button" class="btn btn-sm btn-warning modify_user_status" status="true" data="{{ user.id }}">禁用</button>
+                    {% else %}
+                        <button type="button" class="btn btn-sm modify_user_status btn-info" status="false" data="{{ user.id }}">开启</button>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="panel-default">
+        <center>
+            <ul class="pagination">
+                {% if page_obj %}
+                    <li><a href="/user/list/?page=1">首页</a></li>
+                {% endif %}
+                    {# 如果有上一页则显示上一页标签 #}
+                    {% if page_obj.has_previous %}
+                        <li><a href="/user/list/?page={{ page_obj.previous_page_number }}">上一页</a></li>
+                    {% endif %}
+
+                    {% for p in page_obj.paginator.page_range %}
+                        <li {% if page_obj.number == p %} class="active" {% endif %}><a href="/user/list/?page={{ p }}">{{ p }}</a></li>
+                    {% endfor %}
+
+                    {# 如果有下一页则显示下一页标签 #}
+                    {% if page_obj.has_next %}
+                        <li><a href="/user/list/?page={{ page_obj.next_page_number }}">下一页</a></li>
+                    {% endif %}
+
+                {% if page_obj %}
+                    <li><a href="/user/list/?page={{ page_obj.paginator.num_pages }}">末页</a></li>
+                {% endif %}
+            </ul>
+        </center>
+    </div>
+{% endblock %}
+
+{% block js %}
+<script>
+    // 显示 禁止/正常 用户的状态
+    function change_user_status(status_td_obj, status){
+
+        if (status == "true"){
+            status_td_obj.html('<span class="glyphicon glyphicon-warning-sign text-warning"></span>禁止')
+        }else{
+            status_td_obj.html('<span class="glyphicon glyphicon-ok-circle text-success"></span>正常')
+        }
+    }
+
+    // 通过 post 请求向后端发送请求修改用户的状态
+    function modify_user_status(user_id){
+        $.post("/modifystatus/", {"user_id": user_id}, function(res){
+            if (res.status != 0){
+                swal({
+                    title: res.errmsg,
+                    type: "error",
+                    confirmButtonText: "知道了"
+                });
+            }
+        })
+    }
+
+    // 点击修改按钮改变 禁用/启用 按钮的状态
+{#    $(function(){#}
+{#        $(".modify_user_status").click(function(){#}
+{#            var click_obj = $(this);#}
+{#            var status = click_obj.attr("status");#}
+{#            if(status === "true"){#}
+{#                click_obj.removeClass("btn-warning").addClass("btn-info").attr("status", "false").text("开启");#}
+{#            }else{#}
+{#                click_obj.removeClass("btn-info").addClass("btn-warning").attr("status", "true").text("禁用");#}
+{#            }#}
+{#            change_user_status(click_obj.parents("td").siblings(".user_status"), status);#}
+{#            modify_user_status(click_obj.attr('data'));#}
+{#        });#}
+{#    });#}
+    
+    // 点击 禁用/启用 按钮给出弹窗提示
+    $(function () {
+        $(".modify_user_status").click(function () {
+            var click_obj = $(this);
+            var status = click_obj.attr("status");
+            var user_id = click_obj.attr("data");
+            console.log(user_id);
+
+            if(status == "true"){
+                // sweet alert 提示框
+                swal({
+                    title: "确定禁用吗?",
+                    //text: "即将删除这条IDC信息",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "禁用",
+                    cancelButtonText: "取消",
+                    closeOnConfirm: false
+                }, function () {
+                        // 修改 禁用 按钮属性和文本
+                        click_obj.removeClass("btn-warning").addClass("btn-info").attr("status", "false").text("开启");
+                        // 修改用户是否禁用状态展示
+                        change_user_status(click_obj.parents("td").siblings(".user_status"), status);
+                        // 调用函数向后端发送请求
+                        modify_user_status(click_obj.attr('data'));
+                        swal("禁用成功", "", "success");
+                })
+
+            } else{
+                swal({
+                    title: "确定开启吗?",
+                    //text: "即将删除这条IDC信息",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "启用",
+                    cancelButtonText: "取消",
+                    closeOnConfirm: false
+                }, function () {
+                    $.post("/modifystatus/", function () {
+                        // 修改 启用 按钮属性和文本
+                        click_obj.removeClass("btn-info").addClass("btn-warning").attr("status", "true").text("禁用");
+                        // 修改用户是否禁用状态展示
+                        change_user_status(click_obj.parents("td").siblings(".user_status"), status);
+                        // 调用函数向后端发送请求
+                        modify_user_status(click_obj.attr('data'));
+                        swal("启用成功", "", "success");
+                    })
+                })
+            }
+        })
+    })
+
+</script>
+{% endblock %}
+
