@@ -143,14 +143,13 @@ class ModifyPhoneViewTmp(TemplateView):
 
     def post(self, request):
         """ 处理 post 请求 """
-        print(request.POST)
+        # print(request.POST)
         user_id = request.POST.get('id', None)              # 获取前端传递的 user_id
         new_phone = request.POST.get('new_phone', None)             # 获取前端传递的 new_phone 值
 
         # 如果上述两个值任何一个为空，直接返回 404
         if not user_id or not new_phone:
             raise Http404
-
         try:
             user_obj = User.objects.get(pk=user_id)     # 根据前端传递的 user_id 获取在数据库中获取用户信息
         except:
@@ -161,8 +160,45 @@ class ModifyPhoneViewTmp(TemplateView):
             user_obj.profile.save()         # 保存到 profile 表，注意不是 user 表
 
         return redirect("/user/list")       # 点击完跳转用户展示页
-    #
-    # def get(self, request, *args, **kwargs):
-    #     """ 处理 get 请求 """
-    #     self.request = request
-    #     return super(ModifyPhoneViewTmp, self).get(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        """ 处理 get 请求 """
+        self.request = request
+        return super(ModifyPhoneViewTmp, self).get(request, *args, **kwargs)
+
+
+class ModifyCNnameViewTmp(TemplateView):
+    """
+    
+    """
+    template_name = "user/modify_cnname_tmp.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ModifyCNnameViewTmp, self).get_context_data(**kwargs)
+        context['user_obj'] = get_object_or_404(User, pk=self.request.GET.get('user', None))
+
+        return context
+
+    def post(self, request):
+        # print(request.POST)
+        user_id = request.POST.get('id', None)              # 获取前端传递的 user_id
+        cn_name = request.POST.get('cn_name', None)             # 获取前端传递的 new_phone 值
+
+        # 如果上述两个值任何一个为空，直接返回 404
+        if not user_id or not cn_name:
+            raise Http404
+        try:
+            user_obj = User.objects.get(pk=user_id)     # 根据前端传递的 user_id 获取在数据库中获取用户信息
+        except:
+            raise Http404
+        else:
+            # 当不存在异常的情况，进行修改部门的操作
+            user_obj.profile.cn_name = cn_name        # 将前端传递的信息覆盖原值（即修改中文名)
+            user_obj.profile.save()         # 保存到 profile 表，注意不是 user 表
+
+        return redirect("/user/list")       # 点击完跳转用户展示页
+
+    def get(self, request, *args, **kwargs):
+        """ 处理 get 请求 """
+        self.request = request
+        return super(ModifyCNnameViewTmp, self).get(request, *args, **kwargs)

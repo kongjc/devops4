@@ -25,8 +25,7 @@ urlpatterns = [
     url(r'^list/$', user.UserListView.as_view()),
     url(r'^modifystatus/$', user.ModifyUserStatus.as_view()),
     url(r'^modifydepartment/$', user.ModifyDepartmentView.as_view()),
-
-    # test phone
     url(r'^modifyphone/$', user.ModifyPhoneViewTmp.as_view()),
+    url(r'^modifycnname/$', user.ModifyCNnameViewTmp.as_view()),
 
 ]
