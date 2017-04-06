@@ -1,0 +1,26 @@
+{% extends "public/layout.html" %}
+
+{% block body %}
+    <table class="table table-striped">
+        <tr>
+            <td>#</td>
+            <td>用户列表</td>
+            <td>email</td>
+            <td>状态</td>
+            <td>操作</td>
+        </tr>
+        {% for user in userlist %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ user.username}}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.is_active }}</td>
+            <td> 修改和禁用 </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+
+{% endblock %}
+
+
