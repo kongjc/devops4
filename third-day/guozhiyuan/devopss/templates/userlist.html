@@ -1,0 +1,241 @@
+{% extends 'index.html' %}
+
+{% block nav %}用户列表{% endblock %}
+
+{% block content %}
+    <table class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>用户名</th>
+            <th>注册邮箱</th>
+            <th>电话</th>
+            <th>姓名</th>
+            <th>职位</th>
+            <th>部门</th>
+            <th>状态</th>
+            <th>操作</th>
+
+        </tr>
+        {% for u in object_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ u.username }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.profile.phone }}</td>
+                <td>{{ u.profile.name }}</td>
+                <td>{{ u.profile.title }}</td>
+                <td>{{ u.profile.department|default_if_none:"无部门" }}</td>
+                <td class="user_status">
+                    {% if u.is_active %}
+                        <span class="glyphicon glyphicon-ok-circle text-success"></span>正常
+                    {% else %}
+                        <span class="glyphicon glyphicon-warning-sign text-warning"></span>禁止
+                    {% endif %}
+                </td>
+                <td>
+                     <div class="btn-group">
+                            <button type="button" class="btn btn-primary btn-sm modify_userinfo"  data-toggle="modal" data-target="#myModal" data-id="{{ u.id }}" >修改</button>
+{#                            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="false">#}
+{#                                修改#}
+{#                                <span class="caret"></span>#}
+{#                            </button>#}
+{#                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">#}
+{#                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a></li>#}
+{#                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Another action</a></li>#}
+{#                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Something else here</a></li>#}
+{#                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Separated link</a></li>#}
+{#                            </ul>#}
+                            {% if u.is_active %}
+                                <button type="button" class="btn btn-sm btn-warning modify_user_status" status="true" data="{{ u.id }}">禁用</button>
+                            {% else %}
+                                <button type="button" class="btn btn-sm modify_user_status btn-info" status="false" data="{{ u.id }}">开启</button>
+                            {% endif %}
+                     </div>
+                </td>
+
+            </tr>
+        {% endfor %}
+    </table>
+    <div class="panel-default">
+      <center>
+        <ul class="pagination">
+            <li><a href="/user/userlist/?page=1">首页</a></li>
+
+            {% if page_obj.has_previous %}
+            <li><a href="/user/userlist/?page={{ page_obj.previous_page_number }}">上一页</a></li>
+            {% endif %}
+
+            {% for p in page_range %}
+                <li><a href="/user/userlist/?page={{ p }}">{{ p }}</a></li>
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li><a href="/user/userlist/?page={{ page_obj.next_page_number }}">下一页</a></li>
+            {% endif %}
+
+            <li><a href="/user/userlist/?page={{ page_obj.paginator.num_pages}}">末页</a></li>
+        </ul>
+      </center>
+    </div>
+
+<div class="modal fade" id="myModal" >
+  <div class="modal-dialog " >
+    <div class="modal-content" >
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">修改用户</h4>
+      </div>
+
+      <div class="modal-body" >
+        <form class="form-horizontal" id="update_userinfo_form"  method="post">
+
+          <div class="form-group">
+              <label class="col-sm-2 control-label">邮箱</label>
+              <div class="col-sm-5">
+                  <input type="email" class="form-control" name="email"  id="upemail">
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label for="inputPassword" class="col-sm-2 control-label">姓名</label>
+              <div class="col-sm-5">
+                  <input type="text" class="form-control" name="name" id="upname" >
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label for="inputPassword3" class="col-sm-2 control-label">手机</label>
+              <div class="col-sm-5">
+                  <input type="text" class="form-control" name="phone" id="upphone" >
+              </div>
+          </div>
+          
+          <div class="form-group">
+              <label  class="col-sm-2 control-label">职位</label>
+              <div class="col-sm-5">
+                  <input type="text" class="form-control" name="title" id="uptitle">
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label for="inputPassword3" class="col-sm-2 control-label">部门</label>
+              <div class="col-sm-5">
+                  <select name="department" id="selectID" class="form-control">
+                      <option value="0">请选择部门</option>
+                      {% for department in departments %}
+                          <option value="{{ department.id }}">{{ department.name }}</option>
+                      {% endfor %}
+                  </select>
+              </div>
+          </div>
+
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <input type="hidden" name="id" id="save_id" value="">
+            <button type="submit"  class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+{% block js %}
+<script>
+
+    $('.modify_userinfo').click(function(){
+        var u_id = $(this).attr("data-id")
+        url = '/user/modifyuserinfo/?user_id=' + u_id
+        $.getJSON(url,function(ret){
+            console.log(ret['user'])
+            console.log(ret['user_profile'])
+            if (ret['status'] == 0 && ret['user_profile'] == "undefined"){
+                $("#upemail").val(ret['user'].email)
+                $("#save_id").val(ret['user'].id)
+            }
+            else{
+                $("#save_id").val(ret['user'].id)
+                $("#upemail").val(ret['user'].email)
+                $("#upname").val(ret['user_profile'].name)
+                $("#upphone").val(ret['user_profile'].phone)
+                $("#uptitle").val(ret['user_profile'].title)
+                $("#selectID").val(ret.user_profile.department)
+
+            }
+        })
+
+    })
+
+    $("#update_userinfo_form").on('submit',function(){
+        var data = $("#update_userinfo_form").serialize()
+        $.post('/user/modifyuserinfo/',data,function(res){
+            if (res['status'] == 0) {
+                swal({
+                    title: 'ok',
+                    text: '修改成功',
+                    type: 'success',
+                },function(){
+                    $("#myModal").modal('hide')
+                    window.location.reload()
+                })
+
+            }else{
+                swal({
+                    title: 'no',
+                    text: '修改失败',
+                    type: 'error',}, function(){
+                        $("#myModal").modal('hide')
+                        window.location.reload()})
+
+            }
+
+        })
+        return false
+    })
+
+
+    function change_user_status(status_td_obj, status){
+        if (status == "true"){
+            status_td_obj.html('<span class="glyphicon glyphicon-warning-sign text-warning"></span>禁止')
+        }else{
+            status_td_obj.html('<span class="glyphicon glyphicon-ok-circle text-success"></span>正常')
+        }
+    }
+
+    function modify_user_status(user_id){
+        $.post("/user/usermodify/", {"user_id": user_id}, function(res){
+            if (res.status != 0){
+                swal({
+                    title: res.errmsg,
+                    type: "error",
+                    confirmButtonText: "知道了"
+                });
+            }
+        })
+    }
+
+    $(function(){
+        $(".modify_user_status").click(function(){
+            var click_obj = $(this);
+            var status = click_obj.attr("status");
+            if(status === "true"){
+                click_obj.removeClass("btn-warning").addClass("btn-info").attr("status", "false").text("开启");
+            }else{
+                click_obj.removeClass("btn-info").addClass("btn-warning").attr("status", "true").text("禁用");
+            }
+            change_user_status(click_obj.parents("td").siblings(".user_status"), status);
+            modify_user_status(click_obj.attr('data'));
+        });
+    })
+</script>
+
+{% endblock %}
