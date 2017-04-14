@@ -16,16 +16,36 @@ Including another URLconf
     1. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
-from . import views
-from . import user
+from dashboard import views
+from dashboard import user
+from dashboard.user import group
 
 
 urlpatterns = [
 
-    url(r'^list/$', user.UserListView.as_view()),
-    url(r'^modifystatus/$', user.ModifyUserStatus.as_view()),
-    url(r'^modifydepartment/$', user.ModifyDepartmentView.as_view()),
-    url(r'^modifyphone/$', user.ModifyPhoneViewTmp.as_view()),
-    url(r'^modifycnname/$', user.ModifyCNnameViewTmp.as_view()),
+    url(r'^$', views.IndexView.as_view()),
+    url(r'^login/$', views.LoginView.as_view()),
+    url(r'^logout/$', views.LogoutView.as_view()),
+
+    url(r'^user/', include([
+        url(r'^list/$', user.UserListView.as_view()),
+        url(r'^modifystatus/$', user.ModifyUserStatus.as_view()),
+        url(r'^modifydepartment/$', user.ModifyDepartmentView.as_view()),
+        # url(r'^modifyphone/$', user.ModifyPhoneViewTmp.as_view()),
+        url(r'^modifyphone/$', user.ModifyPhoneView.as_view()),
+
+        url(r'^modifycnname/$', user.ModifyCNnameViewTmp.as_view()),
+    ])),
+
+    url(r'^permission/', include([
+        url(r'^none/$', views.permission),
+    ])),
+
+    url(r'^group/', include([
+        url(r'^$', group.GroupView.as_view()),
+        url(r'^list/$', group.GroupListView.as_view()),
+        url(r'^usergroup/$', group.UserGroupView.as_view()),
+        url(r'^permission/$', group.GroupPermissionListView.as_view()),
+    ])),
 
 ]

@@ -47,9 +47,9 @@
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-{#                            {% if perms.dashboard.change_department %}#}
+                            {% if perms.dashboard.change_department %}
                             <li role="presentation"><a role="menuitem" tabindex="-1" href="/user/modifydepartment/?user={{ user.id }}">部门</a></li>
-{#                            {% endif %}#}
+                            {% endif %}
                             <li role="presentation"><a role="menuitem" tabindex="-1" href="/user/modifyphone/?uid={{ user.id }}">手机号</a></li>
                             <li role="presentation"><a role="menuitem" tabindex="-1" href="#" data='{"uid":"{{ user.id }}"}' class="user_to_group">添加指定组</a></li>
                         </ul>
@@ -155,29 +155,27 @@
         var user_to_group_modal = $("#user_to_group_modal");
         var all_user_group = $("#all_user_group");
 
-        // 点击 添加到用户组 事件
         $(".user_to_group").click(function(){
             user_to_group_modal.modal("show");
-            var data = JSON.parse($(this).attr('data'));        // 将数据解析为 json 对象
-            uid = data.uid;                                     // 获取点击用户的 uid
-            // 用户添加到用户组模态框数据填充
-            $.get("/group/", {"uid":uid}, function(res){
+            var data = JSON.parse($(this).attr('data'));
+            uid = data.uid;
+            $.get("/group/",{"uid":uid},function(res){
                 html = '<option value="0">请选择用户组</option>';
-                // 循环 res
+
                 $.each(res, function(n, obj){
-                    html += '<option value="' + obj.pk + '">' + obj.fields.name + '</option>';  // 拼装 html
+                    html += '<option value="'+obj.pk+'">'+obj.fields.name+'</option>';
                 });
                 all_user_group.html(html)
             });
             return false;
         });
 
-        // 执行将用户添加到指定用户组，点击模态框按钮事件
+        // 执行将用户添加到指定用户组
         $("#user_to_group_btn").click(function(){
+
             var url = "/group/usergroup/";
             var gid = all_user_group.val();
-            user_to_group_modal.modal("hide");      // 点击完隐藏模态框
-            // 点击按钮触发的动作
+            user_to_group_modal.modal("hide");
             $.post(url, {"uid": uid, "gid": gid}, function(res){
                 if(res.status == 0){
                     swal({

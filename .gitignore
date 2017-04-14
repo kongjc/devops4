@@ -7,3 +7,6 @@
 
 # spec
 push-homework.sh
+
+# log
+logs/*

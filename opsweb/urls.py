@@ -16,14 +16,11 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from dashboard import views
+from dashboard.user import group
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 
-    url(r'^$', views.IndexView.as_view()),
-    url(r'^login/$', views.login_view),
-    url(r'^logout/$', views.LogoutView.as_view()),
     # 导入 dashboard url
-    # url(r'^dashboard/', include("dashboard.urls")),
-    url(r'^user/', include("dashboard.urls")),
+    url(r'^', include("dashboard.urls")),
 ]

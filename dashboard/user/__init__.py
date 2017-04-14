@@ -9,6 +9,14 @@ from paginator import getPages
 from dashboard.models import Department
 from dashboard.models import Profile
 
+# permission
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required, permission_required
+
+# 导入 settings 里的自定义选项
+from django.conf import settings
+settings.TEMPLATE_JUMP
+
 
 """
 class UserListView(TemplateView):
@@ -63,6 +71,8 @@ class UserListView(ListView):
 
 class ModifyUserStatus(View):
 
+    @method_decorator(login_required)
+    @method_decorator(permission_required("dashboard.change_user", login_url=settings.PERMISSION_NONE_URL))
     def post(self, request):
         ret = {'status': 0}         # user 的默认状态
         user_id = request.POST.get('user_id', None)     # 从 request 中获取 user_id
@@ -78,7 +88,7 @@ class ModifyUserStatus(View):
                 user.is_active = True
             user.save()     # 保存到 DB
 
-        # 童虎不存在的提示和错误信息
+        # 用户不存在的提示和错误信息
         except User.DoesNotExist:
             ret['status'] = 1
             ret['errmsg'] = "用户不存在"
@@ -100,6 +110,9 @@ class ModifyDepartmentView(TemplateView):
         context['user_obj'] = get_object_or_404(User, pk=self.request.GET.get('user', None))    # 向前端传递 user_obj 对象
         return context
 
+
+    @method_decorator(login_required)
+    @method_decorator(permission_required("dashboard.change_department", login_url=settings.PERMISSION_NONE_URL))
     def post(self, request):
         """ 处理 post 请求 """
         user_id = request.POST.get('id', None)              # 获取前端传递的 user_id
@@ -108,7 +121,6 @@ class ModifyDepartmentView(TemplateView):
         # 如果上述两个值任何一个为空，直接返回 404
         if not user_id or not department_id:
             raise Http404
-
         try:
             user_obj = User.objects.get(pk=user_id)     # 根据前端传递的 user_id 获取在数据库中获取用户信息
             department_obj = Department.objects.get(pk=department_id)   # 根据前端传递的 depart_id 获取部门的信息
@@ -118,9 +130,11 @@ class ModifyDepartmentView(TemplateView):
             # 当不存在异常的情况，进行修改部门的操作
             user_obj.profile.department = department_obj        # 将前端传递的部门信息覆盖原值（即修改部门)
             user_obj.profile.save()         # 保存到 profile 表，注意不是 user 表
-
         return redirect("/user/list")       # 点击完跳转用户展示页
 
+
+    @method_decorator(login_required)
+    @method_decorator(permission_required("dashboard.change_department", login_url=settings.PERMISSION_NONE_URL))
     def get(self, request, *args, **kwargs):
         """ 处理 get 请求 """
         self.request = request
@@ -141,6 +155,8 @@ class ModifyPhoneViewTmp(TemplateView):
 
         return context
 
+    @method_decorator(login_required)
+    @method_decorator(permission_required("dashboard.change_profile", login_url=settings.PERMISSION_NONE_URL))
     def post(self, request):
         """ 处理 post 请求 """
         # print(request.POST)
@@ -161,6 +177,8 @@ class ModifyPhoneViewTmp(TemplateView):
 
         return redirect("/user/list")       # 点击完跳转用户展示页
 
+    @method_decorator(login_required)
+    @method_decorator(permission_required("dashboard.change_profile", login_url=settings.PERMISSION_NONE_URL))
     def get(self, request, *args, **kwargs):
         """ 处理 get 请求 """
         self.request = request
@@ -168,17 +186,16 @@ class ModifyPhoneViewTmp(TemplateView):
 
 
 class ModifyCNnameViewTmp(TemplateView):
-    """
-    
-    """
+    """修改中文名逻辑"""
     template_name = "user/modify_cnname_tmp.html"
 
     def get_context_data(self, **kwargs):
         context = super(ModifyCNnameViewTmp, self).get_context_data(**kwargs)
         context['user_obj'] = get_object_or_404(User, pk=self.request.GET.get('user', None))
-
         return context
 
+    @method_decorator(login_required)
+    @method_decorator(permission_required("dashboard.change_profile", login_url=settings.PERMISSION_NONE_URL))
     def post(self, request):
         # print(request.POST)
         user_id = request.POST.get('id', None)              # 获取前端传递的 user_id
@@ -195,10 +212,49 @@ class ModifyCNnameViewTmp(TemplateView):
             # 当不存在异常的情况，进行修改部门的操作
             user_obj.profile.cn_name = cn_name        # 将前端传递的信息覆盖原值（即修改中文名)
             user_obj.profile.save()         # 保存到 profile 表，注意不是 user 表
-
         return redirect("/user/list")       # 点击完跳转用户展示页
 
+    @method_decorator(login_required)
+    @method_decorator(permission_required("dashboard.change_profile", login_url=settings.PERMISSION_NONE_URL))
     def get(self, request, *args, **kwargs):
         """ 处理 get 请求 """
         self.request = request
         return super(ModifyCNnameViewTmp, self).get(request, *args, **kwargs)
+
+
+class ModifyPhoneView(TemplateView):
+    """修改手机号逻辑"""
+    template_name = "user/modify_phone.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ModifyPhoneView, self).get_context_data(**kwargs)
+        uid = self.request.get('uid')       #  调用父类方法里已经处理过的 request get 方法
+        context['user_obj'] = self.get_user_obj(uid)       # 向前端传递 user_obj
+        return context
+
+    @method_decorator(login_required)
+    @method_decorator(permission_required("dashboard.change_profile", login_url=settings.PERMISSION_NONE_URL))
+    def post(self, request):
+        """"""
+        print(request.POST)
+        uid = request.POST.get('id', None)
+        # 1 取出 user 对象
+        user_obj = self.get_user_obj(uid)
+
+        # 2 修改 user.profile.phone 值
+        user_obj.profile.phone = request.POST.get('phone', None)
+
+        # 3 保存 user.profile.save()
+        user_obj.profile.save()
+
+        return render(request,  settings.TEMPLATE_JUMP, {"status": 0, "next_url": "/user/list"})
+
+    @method_decorator(login_required)
+    @method_decorator(permission_required("dashboard.change_profile", login_url=settings.PERMISSION_NONE_URL))
+    def get_user_obj(self, uid):
+        """公共方法"""
+        try:
+            return User.objects.get(pk=uid)
+        except User.DoesNotExist:
+            return Http404
+

@@ -36,6 +36,9 @@ class Server(models.Model):
 
     class Meta:
         db_table        = "server"          # 数据库表名
+        permissions = (
+            ("view_server", "访问服务器信息"),
+        )
 
 
 class Department(models.Model):
@@ -56,7 +59,7 @@ class Profile(models.Model):
     phone               = models.CharField(max_length=11, null=True)
     title               = models.CharField(max_length=32, null=True)
     department          = models.ForeignKey(Department, null=True)
-    cn_name             = models.CharField(max_length=50, null=True)
+    name             = models.CharField("中文名", max_length=50, null=True)
 
     class Meta:
         db_table        = "user_profile"
@@ -65,5 +68,7 @@ class Profile(models.Model):
         默认值为模型名（小写的），也可以更改这个名字，通过 Meta 的 default_related_name 去修改
         '''
         default_related_name = "profile"            # 默认的反向名称
-
-
+        permissions = (
+            ("view_profile", "访问用户信息"),
+            ("view_group", "访问用户组信息"),
+        )

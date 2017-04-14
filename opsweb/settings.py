@@ -1,3 +1,4 @@
+# coding=utf-8
 """
 Django settings for opsweb project.
 
@@ -113,3 +114,57 @@ STATICFILES_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )
+
+# 页面跳转模板
+TEMPLATE_JUMP = "public/jump.html"
+
+# log
+LOGGING = {
+    "version": 1,
+    'disable_existing_loggers': False,
+    "loggers": {
+        "opsweb": {
+            "level": "DEBUG",
+            "handlers": ["console_handle", "opsweb_file_handle"],
+        },
+        "django": {
+            "level": "DEBUG",
+            "handlers": [ "django_handle"],
+        },
+
+    },
+    "handlers":{
+        "console_handle": {
+            "class": "logging.StreamHandler",
+            "formatter": 'simple'
+        },
+        "opsweb_file_handle": {
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs", "opsweb.log"),
+            "formatter": "opsweb"
+        },
+        "django_handle": {
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs", "django.log"),
+            "formatter": "opsweb"
+        }
+    },
+
+    "formatters": {
+        "opsweb": {
+            "format": "%(asctime)s - %(pathname)s:%(lineno)d[%(levelname)s] - %(message)s"
+        },
+        "simple": {
+            "format": "%(asctime)s %(levelname)s %(message)s"
+        }
+    },
+
+    # "root": {
+    #     "level": "DEBUG",
+    #     "handles": ["console_handle"],
+    # }
+}
+
+# 全局变量
+LOGIN_URL = "/login/"           # 如果验证用户没有登录跳转的 url
+PERMISSION_NONE_URL = "/permission/none/"   # 如果没有自定义的权限，则跳转该 url

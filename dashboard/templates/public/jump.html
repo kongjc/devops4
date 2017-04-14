@@ -1,0 +1,30 @@
+{% extends "public/layout.html" %}
+
+{% block body %}
+    {% if status == 0 %}
+        <h1><center>操作成功</center></h1>
+    {% else %}
+        <h1><center>操作失败</center></h1>
+        <h2><center>{{ errmsg }}</center></h2>
+    {% endif %}
+{% endblock %}
+
+{% block js %}
+    <script>
+        $(function () {
+            var stauts = {{ status }};
+            var next_url = "{{ next_url }}";
+            var timejump = 1500;
+            console.log(next_url);
+
+            if (status != 0){
+                timejump = 5000;
+            }
+
+            setTimeout(function () {
+                window.location.href = next_url;
+            }, timejump)
+
+        })
+    </script>
+{% endblock %}
