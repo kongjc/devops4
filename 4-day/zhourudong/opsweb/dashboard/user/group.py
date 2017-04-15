@@ -106,6 +106,7 @@ class UserGroupView(View):
     '''
 
     @method_decorator(login_required)
+    @method_decorator(permission_required("auth.delete_group", login_url=settings.PERMISSION_NONE_URL))
     def delete(self, request):
         ret = {"status": 0}
         data = QueryDict(request.body)
