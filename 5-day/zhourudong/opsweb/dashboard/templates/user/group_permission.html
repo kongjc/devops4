@@ -1,0 +1,50 @@
+{% extends 'public/layout.html' %}
+
+{% block body %}
+    <div class="col-sm-4">
+        <table class="table table-striped">
+            <tr>
+                <th>*</th>
+                <th>权限</th>
+
+            </tr>
+            {% for permission in permissions %}
+                <tr>
+
+                    <td>{{ forloop.counter}}</td>
+                    <td>{{ permission.name }}</td>
+{#                    <td><button    class="btn btn-danger dim jsDeletePermission" gid="{{ gid }}" p-id="{{ permission.id }}">删除权限</button></td>#}
+
+                </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+     $(function(){
+        $('.jsDeletePermission').on('click', function () {
+            var _this = $(this),
+                permissionid = _this.attr('p-id');
+                gid = _this.attr('gid');
+            alert(permissionid);
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: "{% url 'one_group_permission' %}",
+                data: {
+                    permissionid: permissionid,
+                    gid: gid
+
+                },
+                async: true,
+                success: function (data) {
+
+                }
+            });
+        });
+     })
+    </script>
+{% endblock %}
